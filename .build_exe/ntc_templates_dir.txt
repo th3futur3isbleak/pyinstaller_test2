@@ -1,0 +1,1 @@
+C:\Users\qse9109\PycharmProjects\pyinstaller_netmiko_simple_example\venv\lib\site-packages\ntc_templates\templates
