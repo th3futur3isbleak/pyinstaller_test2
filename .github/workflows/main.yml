@@ -16,7 +16,7 @@ env:
   PY_VERSION: 3.8
 
   # this is used for coverage testing and to define location of publish Sphinx documentation.
-  PACKAGE_NAME: {{ cookiecutter.project_slug }}
+  PACKAGE_NAME: pyinstaller_test2
 
 jobs:
   bootstrap_deps:
