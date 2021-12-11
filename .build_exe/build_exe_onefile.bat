@@ -11,7 +11,7 @@ REM --workpath changes the build directory to avoid leaving artificacts in the m
 python .\.build_exe\write_ntc_templates_dir_to_file.py
 set /p NTC_TEMPLATES_DIR= < .\.build_exe\ntc_templates_dir.txt
 
-pyinstaller %SOURCE_PYTHON_FILE_PATH% ^
+pyinstaller pyinstaller_test2\%SOURCE_PYTHON_FILE_PATH% ^
 	--onefile ^
 	--distpath .\.build_exe\dist\bundles\%PYINST_EXE_NAME% ^
 	--workpath .\.build_exe\build ^

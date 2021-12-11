@@ -2,7 +2,7 @@ REM --distpath changes the distribution directory so we have a
 REM directory read to be copied somewhere with all the associated files
 REM --workpath changes the build directory to avoid leaving artificacts in the main repo
 REM %SOURCE_FILE_PATH% is the environment variable for the source file to be compiled
-pyinstaller %SOURCE_PYTHON_FILE_PATH% ^
+pyinstaller pyinstaller_test2\%SOURCE_PYTHON_FILE_PATH% ^
             --distpath .\.build_exe\dist ^
             --workpath .\.build_exe\build ^
             --specpath .\.build_exe\dist

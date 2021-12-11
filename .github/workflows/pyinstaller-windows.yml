@@ -40,10 +40,10 @@ jobs:
           .github/workflows/run_pytest.bat
       - name: Pylint
         run: |
-          pylint -r y --output test_results/pylint.txt --exit-zero pyinstaller_test/
+          pylint -r y --output test_results/pylint.txt --exit-zero ${{env.PACKAGE_NAME}}/
       - name: Flake8
         run: |
-          flake8 --exit-zero pyinstaller_test/ --tee --output test_results/flake8.txt
+          flake8 --exit-zero ${{env.PACKAGE_NAME}}/ --tee --output test_results/flake8.txt
       - name: Radon
         run: |
           radon cc ${{env.PACKAGE_NAME}}/ > test_results/radon_cc.txt
