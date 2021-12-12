@@ -94,15 +94,15 @@ jobs:
                     7z a -tzip ".\.build_exe\${{env.PYINST_EXE_NAME}}.zip" ".\.build_exe\dist\${{env.PYINST_EXE_NAME}}"
                     # Archive the directory that contains the bundled EXE
                     7z a -tzip ".\.build_exe\dist\bundles\${{env.PYINST_EXE_NAME}}-bundle.zip" ".\.build_exe\dist\bundles\${{env.PYINST_EXE_NAME}}"
-            -   name: get tag name
-                id: get_version
-                shell: pwsh
-                run: |
-                    echo "::set-output name=tag_name::$('${{ github.ref }}' -replace 'refs/\w+/(.*)','$1')"
-            -   name: print tag name
-                shell: pwsh
-                run: |
-                    echo "\${{ steps.get_version.outputs.tag_name }}"
+#            -   name: get tag name
+#                id: get_version
+#                shell: pwsh
+#                run: |
+#                    echo "::set-output name=tag_name::$('${{ github.ref }}' -replace 'refs/\w+/(.*)','$1')"
+#            -   name: print tag name
+#                shell: pwsh
+#                run: |
+#                    echo "\${{ steps.get_version.outputs.tag_name }}"
             -   name: Upload EXE Directory Release Asset
                 # Uploads the ZIP file with the EXE and the associated files.
                 uses: actions/upload-release-asset@v1
