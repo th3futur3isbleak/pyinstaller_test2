@@ -62,10 +62,10 @@ jobs:
                     name: htmldoc
                     path: docs\_build\html\
             -   name: Upload Pylint, Flake8, Radon testing artifact
-                    uses: actions/upload-artifact@v2
-                    with:
-                        name: test_results
-                        path: test_results\
+                uses: actions/upload-artifact@v2
+                with:
+                    name: test_results
+                    path: test_results\
             -   name: Create GitHub release
                 # Creates a Github release
                 # These are numbered sequentially.  If a version tag is to be
