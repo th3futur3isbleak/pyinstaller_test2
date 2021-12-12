@@ -57,10 +57,10 @@ jobs:
                 run: |
                     cmd /r dir /s docs\_build\html\
             -   name: Upload documentation artifact
-                    uses: actions/upload-artifact@v2
-                    with:
-                        name: htmldoc
-                        path: docs\_build\html\
+                uses: actions/upload-artifact@v2
+                with:
+                    name: htmldoc
+                    path: docs\_build\html\
             -   name: Create GitHub release
                 # Creates a Github release
                 # These are numbered sequentially.  If a version tag is to be
