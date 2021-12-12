@@ -66,6 +66,11 @@ jobs:
                 with:
                     name: test_results
                     path: test_results\
+            -   name: get tag name
+                id: get_version
+                shell: pwsh
+                run: |
+                    echo "::set-output name=tag_name::$('${{ github.ref }}' -replace 'refs/\w+/(.*)','$1')"
             -   name: Create GitHub release
                 # Creates a Github release
                 # These are numbered sequentially.  If a version tag is to be
