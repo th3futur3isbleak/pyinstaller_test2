@@ -50,12 +50,12 @@ jobs:
                     # radon raw ${{env.PACKAGE_NAME}}/ > test_results/radon_raw.txt
                     # radon mi ${{env.PACKAGE_NAME}}/ > test_results/radon_mi.txt
                     # radon hal ${{env.PACKAGE_NAME}}/ > test_results/radon_hal.txt
-            -   name: Build HTML documentation (Linux)
-                    run: |
-                        make docs
+            -   name: Build HTML documentation
+                run: |
+                    make docs
             -   name: List documentation files
-                    run: |
-                        dir /s docs/_build/html/
+                run: |
+                    dir /s docs/_build/html/
             -   name: Create GitHub release
                 # Creates a Github release
                 # These are numbered sequentially.  If a version tag is to be
