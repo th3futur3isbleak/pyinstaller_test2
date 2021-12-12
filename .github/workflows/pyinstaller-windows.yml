@@ -78,6 +78,7 @@ jobs:
             -   name: Get tag name
                 shell: bash
                 run: |
+                    echo "::echo::on"
                     git tag --points-at HEAD
             -   name: Create GitHub release
                 # Creates a Github release
