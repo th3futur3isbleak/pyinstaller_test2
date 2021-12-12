@@ -87,6 +87,7 @@ jobs:
             -   name: Echo tag name
                 run: |
                     echo "${{ steps.get_version.outputs.tag_name }}"
+                    echo ""
             -   name: Create GitHub release
                 # Creates a Github release
                 # These are numbered sequentially.  If a version tag is to be
