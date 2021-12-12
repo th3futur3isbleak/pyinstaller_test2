@@ -32,7 +32,7 @@ jobs:
                     # pip install -r requirements.txt
                     # pip install -r requirements_dev.txt
                     pip install .[testing,documentation]
-            -   name: Pytestq
+            -   name: Pytest
                 env:
                     PACKAGE_NAME: ${{env.PACKAGE_NAME}}
                 run: |
@@ -78,7 +78,7 @@ jobs:
             -   name: Get tag name
                 shell: bash
                 run: |
-                    git tag
+                    git tag --points-at HEAD
             -   name: Create GitHub release
                 # Creates a Github release
                 # These are numbered sequentially.  If a version tag is to be
