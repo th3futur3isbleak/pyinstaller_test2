@@ -32,7 +32,7 @@ jobs:
                     # pip install -r requirements.txt
                     # pip install -r requirements_dev.txt
                     pip install .[testing,documentation]
-            -   name: Pytest
+            -   name: Pytestq
                 env:
                     PACKAGE_NAME: ${{env.PACKAGE_NAME}}
                 run: |
@@ -66,15 +66,19 @@ jobs:
                 with:
                     name: test_results
                     path: test_results\
+#            -   name: Get tag name
+#                id: get_version
+#                shell: pwsh
+#                run: |
+#                    echo "::set-output name=tag_name::$('${{ github.ref }}' -replace 'refs/\w+/(.*)','$1')"
+#            -   name: Echo tag name
+#                shell: pwsh
+#                run: |
+#                    echo "${{ steps.get_version.outputs.tag_name }}"
             -   name: Get tag name
-                id: get_version
-                shell: pwsh
+                shell: bash
                 run: |
-                    echo "::set-output name=tag_name::$('${{ github.ref }}' -replace 'refs/\w+/(.*)','$1')"
-            -   name: Echo tag name
-                shell: pwsh
-                run: |
-                    echo "${{ steps.get_version.outputs.tag_name }}"
+                    git tag
             -   name: Create GitHub release
                 # Creates a Github release
                 # These are numbered sequentially.  If a version tag is to be
