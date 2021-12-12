@@ -80,6 +80,9 @@ jobs:
                 run: |
                     echo "::echo::on"
                     git tag --points-at HEAD
+                    echo "::set-output name=tag_name::$(git tag --points-at HEAD)"
+                    GIT_TAG_NAME="$(git tag --points-at HEAD)"
+                    echo $GIT_TAG_NAME
             -   name: Create GitHub release
                 # Creates a Github release
                 # These are numbered sequentially.  If a version tag is to be
