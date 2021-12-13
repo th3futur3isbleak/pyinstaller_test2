@@ -88,7 +88,8 @@ jobs:
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 with:
-                    release_name: Release ${{ github.run_number }}
+                    tag_name: ${{ steps.get_suffix.outputs.release_suffix }}
+                    release_name: Release ${{ steps.get_suffix.outputs.release_suffix }}
             -   name: Pyinstaller Build EXE
                 id: pyinstaller-build
                 env:
