@@ -72,6 +72,12 @@ jobs:
                     echo "$GITHUB_CONTEXT"
                     echo ${{github.ref}}
                     echo ${{github.event}}
+            -   name: Get release suffix
+                shell: bash
+                run: |
+                    RELEASE_SUFFIX=$(bash scripts/print_release_suffix.sh)
+                    echo "::set-output name=release_suffix::$RELEASE_SUFFIX"
+                    echo "Release suffix: $RELEASE_SUFFIX"
     release:
         needs: build
         if: github.event_name == 'push' && github.ref_name == 'main'
@@ -82,7 +88,7 @@ jobs:
                 env:
                     GITHUB_CONTEXT: ${{ toJson(github) }}
                 run: echo "$GITHUB_CONTEXT"
-            -   uses: actions/checkout@v1
+            -   uses: actions/checkout@v2
             -   name: Set up Python ${{env._PYTHON_VERSION}}
                 # Checkout the repository
                 uses: actions/setup-python@v2
