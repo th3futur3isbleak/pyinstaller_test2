@@ -103,7 +103,8 @@ jobs:
                 shell: bash
                 run: |
                     echo "${{ steps.get_suffix.outputs.release_suffix }}"
-                    echo ""
+                    git tag --points-at HEAD
+                    git log
             -   name: Create GitHub release
                 # Creates a Github release
                 # These are numbered sequentially.  If a version tag is to be
