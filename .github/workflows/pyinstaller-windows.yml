@@ -72,3 +72,15 @@ jobs:
                     echo "$GITHUB_CONTEXT"
                     echo ${{github.ref}}
                     echo ${{github.event}}
+    release:
+        needs: build
+        if: github.event_name == 'push' && github.ref_name == 'main'
+        name: Build PyInstaller EXEs
+        runs-on: windows-latest
+        steps:
+            -   uses: actions/checkout@v2
+            -   name: Set up Python ${{env._PYTHON_VERSION}}
+                # Checkout the repository
+                uses: actions/setup-python@v2
+                with:
+                  python-version: ${{env._PYTHON_VERSION}}
