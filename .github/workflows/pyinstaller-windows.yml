@@ -77,6 +77,11 @@ jobs:
                 run: |
                     echo "${{ steps.get_suffix.outputs.release_suffix }}"
                     echo ""
+            -   name: Echo github ref
+                run: |
+                    echo "Github Ref: $GITHUB_REF"
+                    echo "Github Ref name: $GITHUB_REF_NAME"
+                    echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
             -   name: Create GitHub release
                 # Creates a Github release
                 # These are numbered sequentially.  If a version tag is to be
