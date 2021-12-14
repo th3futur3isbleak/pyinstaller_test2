@@ -76,12 +76,11 @@ jobs:
     release:
         needs: build
 
-        if: github.event_name == 'push' && github.ref_name == 'main'
+        # if: github.event_name == 'push' && github.ref_name == 'main'
 
         name: Build PyInstaller EXEs
 
         runs-on: windows-latest
-
         steps:
             -   uses: actions/checkout@v2
             -   name: Set up Python ${{env._PYTHON_VERSION}}
