@@ -1,0 +1,88 @@
+release:
+        needs: build
+
+        # if: github.event_name == 'push' && github.ref_name == 'main'
+
+        name: Build PyInstaller EXEs
+
+        runs-on: windows-latest
+        steps:
+            -   uses: actions/checkout@v2
+            -   name: Set up Python ${{env._PYTHON_VERSION}}
+                # Checkout the repository
+                uses: actions/setup-python@v2
+                with:
+                    python-version: ${{env._PYTHON_VERSION}}
+            -   name: Install dependencies
+                # Install python dependencies
+                # If the requirements.txt is in a different directory,
+                # or if python setup.py is used, change accordingly
+                run: |
+                    python -m pip install --upgrade pip
+                    pip install setuptools wheel twine build
+                    pip install .[testing,documentation]
+            -   name: Get release suffix
+                id: get_suffix
+                shell: bash
+                run: |
+                    RELEASE_SUFFIX=$(bash scripts/print_release_suffix.sh)
+                    echo "::set-output name=release_suffix::$RELEASE_SUFFIX"
+                    echo "Release suffix: $RELEASE_SUFFIX"
+            -   name: Echo release suffix in git bash
+                shell: bash
+                run: |
+                    echo "${{ steps.get_suffix.outputs.release_suffix }}"
+                    echo ""
+            -   name: Create GitHub release
+            # Creates a Github release
+            # These are numbered sequentially.  If a version tag is to be
+            # used (v1.1.1, etc.) than this will need to be changed to
+            # pull the git tags from the latest commit.
+            id: create-new-release
+            uses: actions/create-release@v1
+            env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            with:
+                tag_name: ${{ steps.get_suffix.outputs.release_suffix }}
+                release_name: Release ${{ steps.get_suffix.outputs.release_suffix }}
+                    -   name: Pyinstaller Build EXE
+                        id: pyinstaller-build
+                        env:
+                            SOURCE_PYTHON_FILE_PATH: ${{env.SOURCE_PYTHON_FILE_PATH}}
+                            PYINST_EXE_NAME: ${{env.PYINST_EXE_NAME}}
+                        run: |
+                            # Note, if only one type of build is desired, one of these steps can be removed
+                            # and the assocciated upload step can be removed.
+
+                            # Builds EXE in a directory with associated library files visible to end user
+                            .\.build_exe\build_exe.bat
+
+                            # Builds EXE in a directory in a single large file
+                            .\.build_exe\build_exe_onefile.bat
+                    -   name: Archive Directories
+                        run: |
+                            # Archive directory with EXE and library files
+                            7z a -tzip ".\.build_exe\${{env.PYINST_EXE_NAME}}.zip" ".\.build_exe\dist\${{env.PYINST_EXE_NAME}}"
+                            # Archive the directory that contains the bundled EXE
+                            7z a -tzip ".\.build_exe\dist\bundles\${{env.PYINST_EXE_NAME}}-bundle.zip" ".\.build_exe\dist\bundles\${{env.PYINST_EXE_NAME}}"
+                    -   name: Upload EXE Directory Release Asset
+                        # Uploads the ZIP file with the EXE and the associated files.
+                        uses: actions/upload-release-asset@v1
+                        env:
+                            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                        with:
+                            upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+                            asset_path: .\.build_exe\${{env.PYINST_EXE_NAME}}.zip
+                            asset_name: ${{env.PYINST_EXE_NAME}}-${{ steps.get_suffix.outputs.release_suffix }}.zip
+                            asset_content_type: application/zip
+                    -   name: Upload Bundled EXE (pyinstaller --onefile) Release Asset
+                        # Uploads the ZIP file with the bundled EXE and any associated files.
+                        uses: actions/upload-release-asset@v1
+                        env:
+                            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                        with:
+                            upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+                            asset_path: .\.build_exe\dist\bundles\${{env.PYINST_EXE_NAME}}-bundle.zip
+                            asset_name: ${{env.PYINST_EXE_NAME}}-bundle-${{ steps.get_suffix.outputs.release_suffix }}.zip
+                            asset_content_type: application/zip
+
