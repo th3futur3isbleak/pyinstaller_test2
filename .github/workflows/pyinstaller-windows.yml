@@ -77,11 +77,10 @@ jobs:
                 run: |
                     echo "${{ steps.get_suffix.outputs.release_suffix }}"
                     echo ""
-            -   name: Echo github ref
-                run: |
-                    echo "Github Ref: $GITHUB_REF"
-                    echo "Github Ref name: $GITHUB_REF_NAME"
-                    echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
+            -   name: Dump GitHub context
+                env:
+                    GITHUB_CONTEXT: ${{ toJson(github) }}
+                run: echo "$GITHUB_CONTEXT"
             -   name: Create GitHub release
                 # Creates a Github release
                 # These are numbered sequentially.  If a version tag is to be
