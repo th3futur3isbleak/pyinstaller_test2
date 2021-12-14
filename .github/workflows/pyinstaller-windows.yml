@@ -78,7 +78,11 @@ jobs:
         name: Build PyInstaller EXEs
         runs-on: windows-latest
         steps:
-            -   uses: actions/checkout@v2
+            -   name: Dump GitHub context
+                env:
+                    GITHUB_CONTEXT: ${{ toJson(github) }}
+                run: echo "$GITHUB_CONTEXT"
+            -   uses: actions/checkout@v1
             -   name: Set up Python ${{env._PYTHON_VERSION}}
                 # Checkout the repository
                 uses: actions/setup-python@v2
