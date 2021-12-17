@@ -1,0 +1,158 @@
+# Master YAML for Python packages
+
+name: Main
+
+# Controls when the action will run.
+on:
+    # Triggers the workflow on push to any branch, and to tags with correct name.
+    push:
+        branches: [ "*" ]
+        tags: [ "*-Release" ]
+
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+
+env:
+    PY_VERSION: 3.8
+
+    # this is used for coverage testing and to define location of publish Sphinx documentation.
+    PACKAGE_NAME: pyinstaller_test2
+
+jobs:
+    bootstrap_deps:
+        name: bootstrap dependencies
+        # The type of runner that the job will run on
+        runs-on: windows-latest
+
+        # Steps represent a sequence of tasks that will be executed as part of the job
+        steps:
+            # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+            -   uses: actions/checkout@v2
+
+            -   name: Set up Python ${{ env.PY_VERSION }}
+                uses: actions/setup-python@v2
+                with:
+                    python-version: ${{ env.PY_VERSION }}
+
+            -   name: Install Dependencies
+                run: |
+                    python -m pip install --upgrade pip
+                    pip install setuptools wheel twine build
+                    pip download .[testing,documentation] --dest ${{ runner.temp }}\packages
+
+            -   name: Upload dependencies artifact
+                uses: actions/upload-artifact@v2
+                with:
+                    name: packages
+                    path: ${{ runner.temp }}\packages\
+            -   name: List directory contents.
+                run: Get-ChildItem –Recursive ${{ runner.temp }}\packages\
+
+    build:
+        # this job is run off-premise to avoid potential conflicts with packages
+        # installed by other Python workflows.  GitHub hosted runners create a
+        # pristine environment with each run
+        needs: bootstrap_deps
+        runs-on: windows-latest
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   name: Set up Python ${{ env.PY_VERSION }}
+                uses: actions/setup-python@v2
+                with:
+                    python-version: ${{ env.PY_VERSION }}
+
+            -   name: Download our packages
+                uses: actions/download-artifact@v2
+                with:
+                    name: packages
+                    path: ${{ runner.temp }}/packages/
+
+            -   name: Install Dependencies
+                run: |
+                    python -m pip install --upgrade pip
+                    pip install setuptools wheel twine build
+                    pip install .[testing,documentation] --find-links ${{ runner.temp }}/packages
+
+            -   name: Test with pytest
+                run: |
+                    pytest -m "not integration" tests --junitxml=junit/test-results.xml --cov=${{ env.PACKAGE_NAME }} --cov-report xml --cov-report html
+
+            -   name: Create sdist and wheel
+                run: |
+                    python -m build
+
+            -   name: Upload bdist and sdist artifacts
+                uses: actions/upload-artifact@v2
+                with:
+                    name: dist
+                    path: dist/
+
+            -   name: Upload test coverage artifacts
+                uses: actions/upload-artifact@v2
+                with:
+                    name: htmlcov
+                    path: htmlcov/
+
+            #      - name: Build HTML documentation (Windows)
+            #        if: runner.os == 'Windows'
+            #        run: |
+            #          cd docs
+            #          .\make.bat html
+            #
+            #      - name: Build HTML documentation (Linux)
+            #        if: runner.os == 'Linux'
+            #        run: |
+            #          cd docs
+            #          make html
+            -   name: Build HTML documentation
+                run: |
+                    make docs
+
+            -   name: Upload documentation artifact
+                uses: actions/upload-artifact@v2
+                with:
+                    name: htmldoc
+                    path: docs/_build/html/
+
+    release:
+        needs: build
+
+        if: github.event_name == 'push' && contains(github.ref, '-Release')
+
+        name: Create Windows EXE using PyInstaller
+
+        runs-on: windows-latest
+
+        steps:
+#            -   name: Download bdist and sdist artifacts
+#                uses: actions/download-artifact@v2
+#                with:
+#                    name: dist
+#                    path: ${{ runner.temp }}\dist\
+
+#            -   name: List artifacts
+#                run: ls -l ${{ runner.temp }}\dist\
+
+            -   name: Set up Python ${{ env.PY_VERSION }}
+                uses: actions/setup-python@v2
+                with:
+                    python-version: ${{ env.PY_VERSION }}
+
+            -   name: Install Dependencies
+                run: |
+                    python -m pip install --upgrade pip
+                    pip install setuptools wheel twine
+
+            -   name: Download documentation artifacts
+                uses: actions/download-artifact@v2
+                with:
+                    name: htmldoc
+                    path: html/
+
+            -   name: get tag name
+                id: get_version
+                run: |
+                    echo "::set-output name=tag_name::$('${{ github.ref }}' -replace 'refs/\w+/(.*)','$1')"
+                shell: pwsh
