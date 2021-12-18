@@ -46,7 +46,7 @@ jobs:
                     name: packages
                     path: ${{ runner.temp }}\packages\
             -   name: List directory contents.
-                run: Get-ChildItem –Recursive ${{ runner.temp }}\packages\
+                run: Get-ChildItem ${{ runner.temp }}\packages\ –Recurse
 
     build:
         # this job is run off-premise to avoid potential conflicts with packages
