@@ -121,6 +121,14 @@ jobs:
                 run: |
                     echo "${{ env.BRANCH_NAME }}"
                     echo $env:BRANCH_NAME
+            -   name: Head tag test
+                shell: bash
+                run: |
+                    echo "HEADTAG=$(git tag --points-at HEAD)" >> $GITHUB_ENV
+            -   name: Head tag test confirmation
+                run: |
+                    echo "${{ env.HEADTAG}}"
+                    echo $env:HEADTAG
             -   name: Build HTML documentation
                 run: |
                     make docs
