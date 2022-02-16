@@ -129,10 +129,15 @@ jobs:
                 run: |
                     echo "${{ env.HEADTAG}}"
                     echo $env:HEADTAG
+            -   name: Get release suffix
+                shell: bash
+                run: |
+                    RELEASE_SUFFIX=$(bash scripts/print_release_suffix.sh)
+                    echo "::set-output name=release_suffix::$RELEASE_SUFFIX"
+                    echo "Release suffix: $RELEASE_SUFFIX"
             -   name: Build HTML documentation
                 run: |
                     make docs
-
             -   name: Upload documentation artifact
                 uses: actions/upload-artifact@v2
                 with:
