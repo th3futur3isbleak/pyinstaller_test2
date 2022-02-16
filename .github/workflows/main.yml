@@ -32,7 +32,7 @@ jobs:
                 run: |
                     echo -e "\033[31;1;4mDump GitHub context\033[0m"
                     echo -e "$GITHUB_CONTEXT\n"
-
+                shell: bash
             -   name: Set up Python ${{ env.PY_VERSION }}
                 uses: actions/setup-python@v2
                 with:
