@@ -110,6 +110,9 @@ jobs:
             #        run: |
             #          cd docs
             #          make html
+            -   name: PyInstaller
+                run: |
+                    scripts\windows\build_exe.bat ${{ runner.temp }}
             -   name: Build HTML documentation
                 run: |
                     make docs
