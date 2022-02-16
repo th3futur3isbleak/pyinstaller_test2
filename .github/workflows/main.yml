@@ -113,6 +113,14 @@ jobs:
             -   name: PyInstaller
                 run: |
                     scripts\windows\build_exe.bat ${{ runner.temp }}
+            -   name: Env var test
+                run: |
+                    chcp 65001 #set code page to utf-8
+                    echo ("BRANCH_NAME=" + $env:GITHUB_REF.replace('refs/heads/', '')) >> $env:GITHUB_ENV
+            -   name: Env var test confirmation
+                run: |
+                    echo "${{ env.BRANCH_NAME }}"
+                    echo $env:BRANCH_NAME
             -   name: Build HTML documentation
                 run: |
                     make docs
@@ -133,14 +141,14 @@ jobs:
         runs-on: windows-latest
 
         steps:
-#            -   name: Download bdist and sdist artifacts
-#                uses: actions/download-artifact@v2
-#                with:
-#                    name: dist
-#                    path: ${{ runner.temp }}\dist\
+            -   name: Download bdist and sdist artifacts
+                uses: actions/download-artifact@v2
+                with:
+                    name: dist
+                    path: ${{ runner.temp }}\dist\
 
-#            -   name: List artifacts
-#                run: ls -l ${{ runner.temp }}\dist\
+            -   name: List artifacts
+                run: ls -l ${{ runner.temp }}\dist\
 
             -   name: Set up Python ${{ env.PY_VERSION }}
                 uses: actions/setup-python@v2
