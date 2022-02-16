@@ -4,17 +4,15 @@ name: Main
 
 # Controls when the action will run.
 on:
-    # Triggers the workflow on push to any branch, and to tags with correct name.
-    push:
-        branches: [ "*" ]
-        tags: [ "*-Release" ]
+  push:
+    branches:
+      - main
 
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
 
 env:
     PY_VERSION: 3.8
-
     # this is used for coverage testing and to define location of publish Sphinx documentation.
     PACKAGE_NAME: pyinstaller_test2
 
@@ -28,6 +26,12 @@ jobs:
         steps:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             -   uses: actions/checkout@v2
+            -   name: echo Github context
+                env:
+                    GITHUB_CONTEXT: ${{ toJson(github) }}
+                run: |
+                    echo -e "\033[31;1;4mDump GitHub context\033[0m"
+                    echo -e "$GITHUB_CONTEXT\n"
 
             -   name: Set up Python ${{ env.PY_VERSION }}
                 uses: actions/setup-python@v2
