@@ -154,6 +154,8 @@ jobs:
 
 
         steps:
+            -   uses: actions/checkout@v1
+
             -   name: Get Head Tag
                 shell: bash
                 run: |
