@@ -150,7 +150,7 @@ jobs:
     exe_build:
         needs: build
         runs-on: ${{ matrix.os }}
-        name: Create Windows EXE using PyInstaller
+        name: Create executables using PyInstaller for all platforms
         strategy:
             fail-fast: false
             matrix:
@@ -183,8 +183,8 @@ jobs:
                     python -m pip install --upgrade pip
                     pip install setuptools wheel twine
             -   name: PyInstaller - Build EXE - Windows
+                if: ${{matrix.os}} == 'windows-latest'
                 run: |
-                    if: ${{matrix.os}} == 'windows-latest'
                     scripts\windows\build_exe.bat ${{ runner.temp }}
             -   name: Archive Directories - Windows
                 if: ${{matrix.os}} == 'windows-latest'
