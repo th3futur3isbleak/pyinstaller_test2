@@ -4,12 +4,12 @@ name: Main
 
 # Controls when the action will run.
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 
-    # Allows you to run this workflow manually from the Actions tab
-    workflow_dispatch:
+        # Allows you to run this workflow manually from the Actions tab
+        workflow_dispatch:
 
 env:
     PY_VERSION: 3.8
@@ -114,18 +114,22 @@ jobs:
                 run: |
                     chcp 65001 #set code page to utf-8
                     echo ("BRANCH_NAME=" + $env:GITHUB_REF.replace('refs/heads/', '')) >> $env:GITHUB_ENV
+
             -   name: Env var test confirmation
                 run: |
                     echo "${{ env.BRANCH_NAME }}"
                     echo $env:BRANCH_NAME
+
             -   name: Head tag test
                 shell: bash
                 run: |
                     echo "HEADTAG=$(git tag --points-at HEAD)" >> $GITHUB_ENV
+
             -   name: Head tag test confirmation
                 run: |
                     echo "${{ env.HEADTAG}}"
                     echo $env:HEADTAG
+
             -   name: Get release suffix
                 shell: bash
                 run: |
@@ -134,19 +138,8 @@ jobs:
                     echo "Release suffix: $RELEASE_SUFFIX"
                     git log
                     git describe
-            -   name: PyInstaller - Build EXE
-                run: |
-                    scripts\windows\build_exe.bat ${{ runner.temp }}
-            -   name: Archive Directories
-                run: |
-                    # Archive the directory that contains the bundled EXE
-                    7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip" "${{ runner.temp }}\dist\bundles\show_version"
-            -   name: Upload PyInstaller bundle
-                uses: actions/upload-artifact@v2
-                with:
-                    name: show_version_bundle
-                    path: ${{ runner.temp }}\dist\bundles\show_version-bundle.zip
-            -   name: Build HTML documentatio
+
+            -   name: Build HTML documentation
                 run: |
                     make docs
             -   name: Upload documentation artifact
@@ -154,7 +147,24 @@ jobs:
                 with:
                     name: htmldoc
                     path: docs/_build/html/
+    exe_build:
+        runs-on: windows-latest
+        name: Create Windows EXE using PyInstaller
 
+
+        steps:
+            -   name: PyInstaller - Build EXE
+                run: |
+                    scripts\windows\build_exe.bat ${{ runner.temp }}
+                    -   name: Archive Directories
+                        run: |
+                            # Archive the directory that contains the bundled EXE
+                            7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip" "${{ runner.temp }}\dist\bundles\show_version"
+                    -   name: Upload PyInstaller bundle
+                        uses: actions/upload-artifact@v2
+                        with:
+                            name: show_version_bundle
+                            path: ${{ runner.temp }}\dist\bundles\show_version-bundle.zip
     release:
         needs: build
         if: github.event_name == 'push' && github.ref_name == 'main'
