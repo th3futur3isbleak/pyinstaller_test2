@@ -181,7 +181,7 @@ jobs:
             -   name: Install Dependencies
                 run: |
                     python -m pip install --upgrade pip
-                    pip install setuptools wheel twine
+                    pip install setuptools wheel twine pyinstaller
             -   name: PyInstaller - Build EXE - Windows
                 if: ${{matrix.os}} == 'windows-latest'
                 run: |
@@ -191,12 +191,27 @@ jobs:
                 run: |
                     # Archive the directory that contains the bundled executable
                     7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip" "${{ runner.temp }}\dist\bundles\show_version"
-            -   name: Upload PyInstaller bundle
+            -   name: Upload PyInstaller bundle - Windows
                 if: ${{matrix.os}} == 'windows-latest'
                 uses: actions/upload-artifact@v2
                 with:
                     name: show_version_bundle
                     path: '${{ runner.temp }}\dist\bundles\show_version-bundle.zip'
+            -   name: PyInstaller - Build EXE - Not Windows
+                if: ${{matrix.os}} != 'windows-latest'
+                run: |
+                    bash scripts/bash/build_exe.sh ${{ runner.temp }}
+            -   name: Archive Directories - Not Windows
+                if: ${{matrix.os}} != 'windows-latest'
+                run: |
+                    # Archive the directory that contains the bundled executable
+                    7z a -tzip "${{ runner.temp }}/dist/bundles/show_version-bundle_${{matrix.os}}.zip" "${{ runner.temp }}/dist/bundles/show_version"
+            -   name: Upload PyInstaller bundle - Not Windows
+                if: ${{matrix.os}} != 'windows-latest'
+                uses: actions/upload-artifact@v2
+                with:
+                    name: show_version_bundle
+                    path: '${{ runner.temp }}\dist\bundles\show_version-bundle_${{matrix.os}}.zip'
     release:
         needs: [build, exe_build]
         if: github.event_name == 'push' && github.ref_name == 'main'
