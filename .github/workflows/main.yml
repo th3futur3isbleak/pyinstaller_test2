@@ -171,10 +171,10 @@ jobs:
                     name: dist
                     path: ${{ runner.temp }}\dist\
             -   name: List artifacts - Windows
-                if: ${{matrix.os}} == 'windows-latest'
+                if: matrix.shell == 'cmd'
                 run: ls -l ${{ runner.temp }}\dist\
             -   name: List artifacts - Not Windows
-                if: ${{matrix.os}} != 'windows-latest'
+                if: matrix.shell == 'bash'
                 run: ls -l ${{ runner.temp }}/dist/
             -   name: Set up Python ${{ env.PY_VERSION }}
 
@@ -186,36 +186,36 @@ jobs:
                     python -m pip install --upgrade pip
                     pip install setuptools wheel twine pyinstaller ntc-templates
             -   name: List sitepackages
-                if: ${{matrix.os}} == 'windows-latest'
+                if: matrix.shell == 'cmd'
                 run: |
                     dir C:\hostedtoolcache\windows\Python\3.8.10\x64\lib\site-packages\
 
             -   name: PyInstaller - Build EXE - Windows
-                if: ${{matrix.os}} == 'windows-latest'
+                if: matrix.shell == 'cmd'
                 run: |
                     scripts\windows\build_exe.bat ${{ runner.temp }}
             -   name: Archive Directories - Windows
-                if: ${{matrix.os}} == 'windows-latest'
+                if: matrix.shell == 'cmd'
                 run: |
                     # Archive the directory that contains the bundled executable
                     7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip" "${{ runner.temp }}\dist\bundles\show_version"
             -   name: Upload PyInstaller bundle - Windows
-                if: ${{matrix.os}} == 'windows-latest'
+                if: matrix.shell == 'cmd'
                 uses: actions/upload-artifact@v2
                 with:
                     name: show_version_bundle
                     path: '${{ runner.temp }}\dist\bundles\show_version-bundle.zip'
             -   name: PyInstaller - Build EXE - Not Windows
-                if: ${{matrix.os}} != 'windows-latest'
+                if: matrix.shell == 'bash'
                 run: |
                     bash scripts/bash/build_exe.sh ${{ runner.temp }}
             -   name: Archive Directories - Not Windows
-                if: ${{matrix.os}} != 'windows-latest'
+                if: matrix.shell == 'bash'
                 run: |
                     # Archive the directory that contains the bundled executable
                     7z a -tzip "${{ runner.temp }}/dist/bundles/show_version-bundle_${{matrix.os}}.zip" "${{ runner.temp }}/dist/bundles/show_version"
             -   name: Upload PyInstaller bundle - Not Windows
-                if: ${{matrix.os}} != 'windows-latest'
+                if: matrix.shell == 'bash'
                 uses: actions/upload-artifact@v2
                 with:
                     name: show_version_bundle
