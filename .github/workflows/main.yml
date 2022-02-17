@@ -154,6 +154,10 @@ jobs:
 
 
         steps:
+            -   name: Get Head Tag
+                shell: bash
+                run: |
+                    echo "HEADTAG=$(git tag --points-at HEAD)" >> $GITHUB_ENV
             -   name: Download bdist and sdist artifacts
                 if: env.BRANCH_NAME  == 'main'
                 uses: actions/download-artifact@v2
