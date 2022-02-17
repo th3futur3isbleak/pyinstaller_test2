@@ -148,6 +148,7 @@ jobs:
 
     release:
         needs: build
+        if: github.event_name == 'push' && github.ref_name == 'main'
         runs-on: windows-latest
         name: Create Windows EXE using PyInstaller
 
