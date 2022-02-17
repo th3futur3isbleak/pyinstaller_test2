@@ -157,8 +157,8 @@ jobs:
                 os: [ windows-latest, ubuntu-latest, macos-latest ]
                 include:
                     -   os: windows-latest
-                        build_command: "scripts/\windows/\build_exe.bat"
-                        archive_command: "7z a -tzip "${{ runner.temp }}/\dist/\bundles/\show_version-bundle.zip"
+                        build_command: 'scripts\windows\build_exe.bat'
+                        archive_command: '7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip'
                         artifact_path: ${{ runner.temp }}\dist\bundles\show_version-bundle.zip
                     -   os: ubuntu-latest
                         build_command: "bash scripts/bash/build_exe.sh"
