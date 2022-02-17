@@ -149,10 +149,25 @@ jobs:
                     path: docs/_build/html/
     exe_build:
         needs: build
-        runs-on: windows-latest
+        runs-on: ${{ matrix.os }}
         name: Create Windows EXE using PyInstaller
-
-
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ windows-latest, ubuntu-latest, macos-latest ]
+                include:
+                    -   os: windows-latest
+                        build_command: "scripts\windows\build_exe.bat"
+                        archive_command: "7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip" "${{ runner.temp }}\dist\bundles\show_version"
+                        artifact_path: ${{ runner.temp }}\dist\bundles\show_version-bundle.zip
+                    -   os: ubuntu-latest
+                        build_command: "bash scripts/bash/build_exe.sh"
+                        archive_command: "7z a -tzip "${{ runner.temp }}/dist/bundles/show_version-bundle.zip" "${{ runner.temp }}/dist/bundles/show_version"
+                        artifact_path: ${{ runner.temp }}/dist/bundles/show_version-bundle.zip
+                    -   os: macos-latest
+                        build_command: "bash scripts/bash/build_exe.sh"
+                        archive_command: "7z a -tzip "${{ runner.temp }}/dist/bundles/show_version-bundle.zip" "${{ runner.temp }}/dist/bundles/show_version"
+                        artifact_path: ${{ runner.temp }}/dist/bundles/show_version-bundle.zip
         steps:
             -   uses: actions/checkout@v1
             -   name: Download bdist and sdist artifacts
@@ -175,16 +190,16 @@ jobs:
                     pip install setuptools wheel twine
             -   name: PyInstaller - Build EXE
                 run: |
-                    scripts\windows\build_exe.bat ${{ runner.temp }}
+                    ${{ matrix.build_command }} ${{ runner.temp }}
             -   name: Archive Directories
                 run: |
-                    # Archive the directory that contains the bundled EXE
-                    7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip" "${{ runner.temp }}\dist\bundles\show_version"
+                    # Archive the directory that contains the bundled executable
+                    ${{ matrix.archive_command }}
             -   name: Upload PyInstaller bundle
                 uses: actions/upload-artifact@v2
                 with:
                     name: show_version_bundle
-                    path: ${{ runner.temp }}\dist\bundles\show_version-bundle.zip
+                    path: ${{ matrix.artifact_path }}
     release:
         needs: [build, exe_build]
         if: github.event_name == 'push' && github.ref_name == 'main'
