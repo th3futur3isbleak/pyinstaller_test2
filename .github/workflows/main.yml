@@ -149,8 +149,8 @@ jobs:
     release:
         needs: build
 
-        if: github.event_name == 'push' && contains(github.ref, '-Release')
-
+    #    if: github.event_name == 'push' && contains(github.ref, '-Release')
+        if: github.event_name == 'push' && env.BRANCH_NAME == 'main'
         name: Create Windows EXE using PyInstaller
 
         runs-on: windows-latest
