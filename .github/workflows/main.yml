@@ -110,9 +110,6 @@ jobs:
             #        run: |
             #          cd docs
             #          make html
-            -   name: PyInstaller
-                run: |
-                    scripts\windows\build_exe.bat ${{ runner.temp }}
             -   name: Env var test
                 run: |
                     chcp 65001 #set code page to utf-8
@@ -137,6 +134,9 @@ jobs:
                     echo "Release suffix: $RELEASE_SUFFIX"
                     git log
                     git describe
+            -   name: PyInstaller - Build EXE
+                run: |
+                    scripts\windows\build_exe.bat ${{ runner.temp }}
             -   name: Build HTML documentation
                 run: |
                     make docs
