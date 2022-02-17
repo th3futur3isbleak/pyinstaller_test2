@@ -135,6 +135,8 @@ jobs:
                     RELEASE_SUFFIX=$(bash scripts/print_release_suffix.sh)
                     echo "::set-output name=release_suffix::$RELEASE_SUFFIX"
                     echo "Release suffix: $RELEASE_SUFFIX"
+                    git log
+                    git describe
             -   name: Build HTML documentation
                 run: |
                     make docs
