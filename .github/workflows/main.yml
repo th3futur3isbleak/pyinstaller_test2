@@ -174,26 +174,25 @@ jobs:
                 run: ls -l ${{ runner.temp }}\dist\
 
             -   name: Set up Python ${{ env.PY_VERSION }}
-                if: contains(env.HEADTAG, 'v')
+
                 uses: actions/setup-python@v2
                 with:
                     python-version: ${{ env.PY_VERSION }}
             -   name: Install Dependencies
-                if: contains(env.HEADTAG, 'v')
                 run: |
                     python -m pip install --upgrade pip
                     pip install setuptools wheel twine
             -   name: PyInstaller - Build EXE - Windows
                 run: |
-                    if: ${{matrix.shell}} == 'cmd'
+                    if: ${{matrix.os}} == 'windows-latest'
                     scripts\windows\build_exe.bat ${{ runner.temp }}
             -   name: Archive Directories - Windows
-                if: ${{matrix.shell}} == 'cmd'
+                if: ${{matrix.os}} == 'windows-latest'
                 run: |
                     # Archive the directory that contains the bundled executable
                     7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip" "${{ runner.temp }}\dist\bundles\show_version"
             -   name: Upload PyInstaller bundle
-                if: ${{matrix.shell}} == 'cmd'
+                if: ${{matrix.os}} == 'windows-latest'
                 uses: actions/upload-artifact@v2
                 with:
                     name: show_version_bundle
