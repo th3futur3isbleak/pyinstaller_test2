@@ -167,7 +167,8 @@ jobs:
             -   uses: actions/checkout@v1
             -   name: Matrix dump
                 run: |
-                    echo ${{matrix}}
+                    echo ${{matrix.os}}
+                    echo ${{matrix.shell}}
             -   name: Download bdist and sdist artifacts - Windows
                 if: matrix.shell == 'cmd'
                 uses: actions/download-artifact@v2
@@ -220,7 +221,7 @@ jobs:
                 run: |
                     bash scripts/bash/build_exe.sh ${{ runner.temp }}
             -   name: Archive Directories - Not Windows
-                if: matrix.shell == 'bash'
+                if: matrix.os != 'windows-latest'
                 run: |
                     # Archive the directory that contains the bundled executable
                     7z a -tzip "${{ runner.temp }}/dist/bundles/show_version-bundle_${{matrix.os}}.zip" "${{ runner.temp }}/dist/bundles/show_version"
@@ -229,7 +230,7 @@ jobs:
                 uses: actions/upload-artifact@v2
                 with:
                     name: show_version_bundle
-                    path: '${{ runner.temp }}\dist\bundles\show_version-bundle_${{matrix.os}}.zip'
+                    path: '${{ runner.temp }}/dist/bundles/show_version-bundle_${{matrix.os}}.zip'
     release:
         needs: [build, exe_build]
         if: github.event_name == 'push' && github.ref_name == 'main'
