@@ -141,11 +141,11 @@ jobs:
                 run: |
                     # Archive the directory that contains the bundled EXE
                     7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip" "${{ runner.temp }}\dist\bundles\show_version"
-            -   name: Upload bdist and sdist artifacts
+            -   name: Upload PyInstaller bundle
                 uses: actions/upload-artifact@v2
                 with:
                     name: show_version_bundle
-                    path: "${{ runner.temp }}\dist\bundles\show_version-bundle.zip"
+                    path: ${{ runner.temp }}\dist\bundles\show_version-bundle.zip
             -   name: Build HTML documentatio
                 run: |
                     make docs
