@@ -187,7 +187,8 @@ jobs:
             -   name: Install Dependencies
                 run: |
                     python -m pip install --upgrade pip
-                    pip install setuptools wheel twine pyinstaller ntc-templates
+                    pip install setuptools wheel
+                    pip install twine pyinstaller ntc-templates
             -   name: PyInstaller - Build EXE - Windows
                 if: matrix.os == 'windows-latest'
                 run: |
@@ -199,7 +200,7 @@ jobs:
             -   name: Archive Directories
                 run: |
                     # Archive the directory that contains the bundled executable
-                    7z a -tzip "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version-bundle_${{matrix.os}}.zip" "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version"
+                    7z a -tzip "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version_${{matrix.os}}.zip" "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version"
             -   name: Upload PyInstaller bundle
                 uses: actions/upload-artifact@v2
                 with:
