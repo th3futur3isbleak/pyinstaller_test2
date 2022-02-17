@@ -150,42 +150,40 @@ jobs:
         needs: build
         runs-on: windows-latest
         name: Create Windows EXE using PyInstaller
-
+        if: github.event_name == 'push' && github.ref_name == 'main'
 
         steps:
+            -   name: Get Head Tag
+                shell: bash
+                run: |
+                    echo "HEADTAG=$(git tag --points-at HEAD)" >> $GITHUB_ENV
             -   name: Download bdist and sdist artifacts
-                if: env.BRANCH_NAME  == 'main'
+                if: contains(env.HEADTAG, "v")
                 uses: actions/download-artifact@v2
                 with:
                     name: dist
                     path: ${{ runner.temp }}\dist\
 
             -   name: List artifacts
-                if: env.BRANCH_NAME  == 'main'
+                if: contains(env.HEADTAG, "v")
                 run: ls -l ${{ runner.temp }}\dist\
 
             -   name: Set up Python ${{ env.PY_VERSION }}
-                if: env.BRANCH_NAME  == 'main'
+                if: contains(env.HEADTAG, "v")")
                 uses: actions/setup-python@v2
                 with:
                     python-version: ${{ env.PY_VERSION }}
 
             -   name: Install Dependencies
-                if: env.BRANCH_NAME  == 'main'
+                if: contains(env.HEADTAG, "v")
                 run: |
                     python -m pip install --upgrade pip
                     pip install setuptools wheel twine
 
             -   name: Download documentation artifacts
-                if: env.BRANCH_NAME  == 'main'
+                if: contains(env.HEADTAG, "v")
                 uses: actions/download-artifact@v2
                 with:
                     name: htmldoc
                     path: html/
 
-            -   name: get tag name
-                if: env.BRANCH_NAME  == 'main'
-                id: get_version
-                run: |
-                    echo "::set-output name=tag_name::$('${{ github.ref }}' -replace 'refs/\w+/(.*)','$1')"
-                shell: pwsh
