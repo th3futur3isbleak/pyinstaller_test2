@@ -153,20 +153,39 @@ jobs:
 
 
         steps:
+            -   uses: actions/checkout@v1
+            -   name: Download bdist and sdist artifacts
+                uses: actions/download-artifact@v2
+                with:
+                    name: dist
+                    path: ${{ runner.temp }}\dist\
+            -   name: List artifacts
+                run: ls -l ${{ runner.temp }}\dist\
+
+            -   name: Set up Python ${{ env.PY_VERSION }}
+                if: contains(env.HEADTAG, 'v')
+                uses: actions/setup-python@v2
+                with:
+                    python-version: ${{ env.PY_VERSION }}
+            -   name: Install Dependencies
+                if: contains(env.HEADTAG, 'v')
+                run: |
+                    python -m pip install --upgrade pip
+                    pip install setuptools wheel twine
             -   name: PyInstaller - Build EXE
                 run: |
                     scripts\windows\build_exe.bat ${{ runner.temp }}
-                    -   name: Archive Directories
-                        run: |
-                            # Archive the directory that contains the bundled EXE
-                            7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip" "${{ runner.temp }}\dist\bundles\show_version"
-                    -   name: Upload PyInstaller bundle
-                        uses: actions/upload-artifact@v2
-                        with:
-                            name: show_version_bundle
-                            path: ${{ runner.temp }}\dist\bundles\show_version-bundle.zip
+            -   name: Archive Directories
+                run: |
+                    # Archive the directory that contains the bundled EXE
+                    7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip" "${{ runner.temp }}\dist\bundles\show_version"
+            -   name: Upload PyInstaller bundle
+                uses: actions/upload-artifact@v2
+                with:
+                    name: show_version_bundle
+                    path: ${{ runner.temp }}\dist\bundles\show_version-bundle.zip
     release:
-        needs: build
+        needs: build, exe_build
         if: github.event_name == 'push' && github.ref_name == 'main'
         runs-on: windows-latest
         name: Create Windows EXE using PyInstaller
