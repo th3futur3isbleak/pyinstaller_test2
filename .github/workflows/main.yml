@@ -185,7 +185,7 @@ jobs:
                     name: show_version_bundle
                     path: ${{ runner.temp }}\dist\bundles\show_version-bundle.zip
     release:
-        needs: build, exe_build
+        needs: [build, exe_build]
         if: github.event_name == 'push' && github.ref_name == 'main'
         runs-on: windows-latest
         name: Create Windows EXE using PyInstaller
