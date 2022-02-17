@@ -199,12 +199,12 @@ jobs:
             -   name: Archive Directories
                 run: |
                     # Archive the directory that contains the bundled executable
-                    7z a -tzip "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version-bundle_{{matrix.os}}.zip" "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version"
+                    7z a -tzip "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version-bundle_${{matrix.os}}.zip" "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version"
             -   name: Upload PyInstaller bundle
                 uses: actions/upload-artifact@v2
                 with:
-                    name: show_version_bundle
-                    path: '${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version_{{matrix.os}}.zip'
+                    name: show_version_${{matrix.os}}
+                    path: '${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version_${{matrix.os}}.zip'
     release:
         needs: [build, exe_build]
         if: github.event_name == 'push' && github.ref_name == 'main'
