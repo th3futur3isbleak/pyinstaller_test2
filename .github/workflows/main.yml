@@ -165,11 +165,21 @@ jobs:
 
         steps:
             -   uses: actions/checkout@v1
-            -   name: Download bdist and sdist artifacts
+            -   name: Matrix dump
+                run: |
+                    echo ${{ toJson(matrix) }}
+            -   name: Download bdist and sdist artifacts - Windows
+                if: matrix.shell == 'cmd'
                 uses: actions/download-artifact@v2
                 with:
                     name: dist
                     path: ${{ runner.temp }}\dist\
+            -   name: Download bdist and sdist artifacts - Not Windows
+                if: matrix.shell == 'bash'
+                uses: actions/download-artifact@v2
+                with:
+                    name: dist
+                    path: ${{ runner.temp }}/dist/
             -   name: List artifacts - Windows
                 if: matrix.shell == 'cmd'
                 run: ls -l ${{ runner.temp }}\dist\
