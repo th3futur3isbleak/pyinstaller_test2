@@ -177,18 +177,8 @@ jobs:
                 with:
                     name: dist
                     path: ${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}
-            -   name: Download bdist and sdist artifacts - Not Windows
-                if: matrix.shell == 'bash'
-                uses: actions/download-artifact@v2
-                with:
-                    name: dist
-                    path: ${{ runner.temp }}/dist/
-            -   name: List artifacts - Windows
-                if: matrix.shell == 'cmd'
-                run: ls -l ${{ runner.temp }}\dist\
-            -   name: List artifacts - Not Windows
-                if: matrix.shell == 'bash'
-                run: ls -l ${{ runner.temp }}/dist/
+            -   name: List artifacts
+                run: ls -l ${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}
             -   name: Set up Python ${{ env.PY_VERSION }}
 
                 uses: actions/setup-python@v2
@@ -199,35 +189,22 @@ jobs:
                     python -m pip install --upgrade pip
                     pip install setuptools wheel twine pyinstaller ntc-templates
             -   name: PyInstaller - Build EXE - Windows
-                if: matrix.shell == 'cmd'
+                if: matrix.os == 'windows-latest'
                 run: |
                     scripts\windows\build_exe.bat ${{ runner.temp }}
-            -   name: Archive Directories - Windows
-                if: matrix.shell == 'cmd'
-                run: |
-                    # Archive the directory that contains the bundled executable
-                    7z a -tzip "${{ runner.temp }}\dist\bundles\show_version-bundle.zip" "${{ runner.temp }}\dist\bundles\show_version"
-            -   name: Upload PyInstaller bundle - Windows
-                if: matrix.shell == 'cmd'
-                uses: actions/upload-artifact@v2
-                with:
-                    name: show_version_bundle
-                    path: '${{ runner.temp }}\dist\bundles\show_version-bundle.zip'
             -   name: PyInstaller - Build EXE - Not Windows
-                if: matrix.shell == 'bash'
-                run: |
-                    bash scripts/bash/build_exe.sh ${{ runner.temp }}
-            -   name: Archive Directories - Not Windows
                 if: matrix.os != 'windows-latest'
                 run: |
+                    bash scripts/bash/build_exe.sh ${{ runner.temp }}
+            -   name: Archive Directories
+                run: |
                     # Archive the directory that contains the bundled executable
-                    7z a -tzip "${{ runner.temp }}/dist/bundles/show_version-bundle_${{matrix.os}}.zip" "${{ runner.temp }}/dist/bundles/show_version"
-            -   name: Upload PyInstaller bundle - Not Windows
-                if: matrix.shell == 'bash'
+                    7z a -tzip "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version-bundle_{{matrix.os}}.zip" "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version"
+            -   name: Upload PyInstaller bundle
                 uses: actions/upload-artifact@v2
                 with:
                     name: show_version_bundle
-                    path: '${{ runner.temp }}/dist/bundles/show_version-bundle_${{matrix.os}}.zip'
+                    path: '${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version_{{matrix.os}}.zip'
     release:
         needs: [build, exe_build]
         if: github.event_name == 'push' && github.ref_name == 'main'
