@@ -155,6 +155,7 @@ jobs:
             fail-fast: false
             matrix:
                 os: [ windows-latest, ubuntu-latest, macos-latest ]
+                exe_name: ['show_version', 'show_inventory']
                 include:
                     -   os: windows-latest
                         shell: 'cmd'
@@ -165,6 +166,7 @@ jobs:
                     -   os: macos-latest
                         pathsep: '/'
                         shell: 'bash'
+
 
         steps:
             -   uses: actions/checkout@v1
@@ -192,20 +194,20 @@ jobs:
             -   name: PyInstaller - Build EXE - Windows
                 if: matrix.os == 'windows-latest'
                 run: |
-                    scripts\windows\build_exe.bat ${{ runner.temp }}
+                    scripts\windows\build_${{matrix.exe_name}}.bat ${{ runner.temp }}
             -   name: PyInstaller - Build EXE - Not Windows
                 if: matrix.os != 'windows-latest'
                 run: |
-                    bash scripts/bash/build_exe.sh ${{ runner.temp }}
+                    bash scripts/bash/build_${{matrix.exe_name}}.sh ${{ runner.temp }}
             -   name: Archive Directories
                 run: |
                     # Archive the directory that contains the bundled executable
-                    7z a -tzip "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version_${{matrix.os}}.zip" "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version"
+                    7z a -tzip "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}${{matrix.exe_name}}_${{matrix.os}}.zip" "${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}${{matrix.exe_name}}"
             -   name: Upload PyInstaller bundle
                 uses: actions/upload-artifact@v2
                 with:
-                    name: show_version_${{matrix.os}}
-                    path: '${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version_${{matrix.os}}.zip'
+                    name: show_version_${{matrix.os}}_${{matrix.exe_name}}
+                    path: '${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}${{matrix.exe_name}}_${{matrix.os}}.zip'
             -   name: Release Check
                 shell: bash
                 run: |

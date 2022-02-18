@@ -103,10 +103,8 @@ def main(username,
 
     try:
         cisco_ssh = ConnectHandler(**cisco_device)
-        versions = cisco_ssh.send_command("show version", use_textfsm=True)
-        hostname = versions[0]['hostname']
-        version = versions[0]['version']
-        logger.info(f"HOST:{host_ip:15} Hostname: {hostname} Version: {version}.")
+        show_inventory = cisco_ssh.send_command("show inventory", use_textfsm=True)
+        print(show_inventory)
         cisco_ssh.disconnect()
     except NetMikoTimeoutException:
         logger.error(f"HOST:{host_ip:15} Timeout error occurred.")
