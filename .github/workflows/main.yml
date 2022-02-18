@@ -206,6 +206,15 @@ jobs:
                 with:
                     name: show_version_${{matrix.os}}
                     path: '${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}show_version_${{matrix.os}}.zip'
+            -   name: Release Check
+                shell: bash
+                run: |
+                    echo "HEADTAG=$(git tag --points-at HEAD)" >> $GITHUB_ENV
+            -   name: Release Check Test
+                if: env.HEADTAG != ""
+                run: |
+                    echo "Release, Release"
+
     release:
         needs: [build, exe_build]
         if: github.event_name == 'push' && github.ref_name == 'main'
