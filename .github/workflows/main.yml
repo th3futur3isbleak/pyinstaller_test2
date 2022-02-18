@@ -233,7 +233,7 @@ jobs:
                     tag_name: ${{ steps.get_suffix.outputs.release_suffix }}
                     release_name: Release ${{ steps.get_suffix.outputs.release_suffix }}
             -   name: Upload Bundled EXE (pyinstaller --onefile) Release Asset
-                if: env.HEADTAG != '' and matrix.os == 'windows-latest'
+                if: env.HEADTAG != '' && matrix.os == 'windows-latest'
                 # Uploads the ZIP file with the bundled EXE and any associated files.
                 uses: actions/upload-release-asset@v1
                 env:
