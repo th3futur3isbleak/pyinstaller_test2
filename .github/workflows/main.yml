@@ -170,7 +170,7 @@ jobs:
 
         steps:
             -   uses: actions/checkout@v1
-            -   name: Matrix dump
+            -   name: Set OSNAME ENV Variable
                 shell: bash
                 run: |
                     echo "OSNAME=$(echo ${{matrix.os}} | sed 's/-latest//')" >> $GITHUB_ENV
@@ -207,16 +207,42 @@ jobs:
             -   name: Upload PyInstaller bundle
                 uses: actions/upload-artifact@v2
                 with:
-                    name: ${{matrix.exe_name}}_${{matrix.os}}
+                    name: ${{matrix.exe_name}}_${{env.OSNAME}}
                     path: '${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}${{matrix.exe_name}}_${{matrix.os}}.zip'
             -   name: Release Check
                 shell: bash
                 run: |
                     echo "HEADTAG=$(git tag --points-at HEAD)" >> $GITHUB_ENV
-            -   name: Release Check Test
+
+            -   name: Get release suffix
                 if: env.HEADTAG != ''
+                id: get_suffix
+                shell: bash
                 run: |
-                    echo "Release, Release"
+                  RELEASE_SUFFIX=$(bash scripts/print_release_suffix.sh)
+                  echo "::set-output name=release_suffix::$RELEASE_SUFFIX"
+                  echo "Release suffix: $RELEASE_SUFFIX"
+            -   name: Create GitHub release
+                if: env.HEADTAG != '' and matrix.os == 'windows-latest'
+                # Creates a Github release
+                id: create-new-release
+                uses: actions/create-release@v1
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                with:
+                    tag_name: ${{ steps.get_suffix.outputs.release_suffix }}
+                    release_name: Release ${{ steps.get_suffix.outputs.release_suffix }}
+            -   name: Upload Bundled EXE (pyinstaller --onefile) Release Asset
+                if: env.HEADTAG != '' and matrix.os == 'windows-latest'
+                # Uploads the ZIP file with the bundled EXE and any associated files.
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                with:
+                    upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+                    asset_path: '${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}${{matrix.exe_name}}_${{matrix.os}}.zip'
+                    asset_name: ${{matrix.exe_name}}_${{env.OSNAME}}_${{ steps.get_suffix.outputs.release_suffix }}.zip
+                    asset_content_type: application/zip
 
     release:
         needs: [build, exe_build]
