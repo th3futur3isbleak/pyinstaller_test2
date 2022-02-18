@@ -222,27 +222,27 @@ jobs:
                   RELEASE_SUFFIX=$(bash scripts/print_release_suffix.sh)
                   echo "::set-output name=release_suffix::$RELEASE_SUFFIX"
                   echo "Release suffix: $RELEASE_SUFFIX"
-            -   name: Create GitHub release
-                if: env.HEADTAG != '' && matrix.os == 'windows-latest'
-                # Creates a Github release
-                id: create-new-release
-                uses: actions/create-release@v1
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                with:
-                    tag_name: ${{ steps.get_suffix.outputs.release_suffix }}
-                    release_name: Release ${{ steps.get_suffix.outputs.release_suffix }}
-            -   name: Upload Bundled EXE (pyinstaller --onefile) Release Asset
-                if: env.HEADTAG != '' && matrix.os == 'windows-latest'
-                # Uploads the ZIP file with the bundled EXE and any associated files.
-                uses: actions/upload-release-asset@v1
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                with:
-                    upload_url: ${{ steps.create-new-release.outputs.upload_url }}
-                    asset_path: '${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}${{matrix.exe_name}}_${{matrix.os}}.zip'
-                    asset_name: ${{matrix.exe_name}}_${{env.OSNAME}}_${{ steps.get_suffix.outputs.release_suffix }}.zip
-                    asset_content_type: application/zip
+#            -   name: Create GitHub release
+#                if: env.HEADTAG != '' && matrix.os == 'windows-latest'
+#                # Creates a Github release
+#                id: create-new-release
+#                uses: actions/create-release@v1
+#                env:
+#                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#                with:
+#                    tag_name: ${{ steps.get_suffix.outputs.release_suffix }}
+#                    release_name: Release ${{ steps.get_suffix.outputs.release_suffix }}
+#            -   name: Upload Bundled EXE (pyinstaller --onefile) Release Asset
+#                if: env.HEADTAG != '' && matrix.os == 'windows-latest'
+#                # Uploads the ZIP file with the bundled EXE and any associated files.
+#                uses: actions/upload-release-asset@v1
+#                env:
+#                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#                with:
+#                    upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+#                    asset_path: '${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}${{matrix.exe_name}}_${{matrix.os}}.zip'
+#                    asset_name: ${{matrix.exe_name}}_${{env.OSNAME}}_${{ steps.get_suffix.outputs.release_suffix }}.zip
+#                    asset_content_type: application/zip
 
     release:
         needs: [build, exe_build]
