@@ -223,7 +223,7 @@ jobs:
                   echo "::set-output name=release_suffix::$RELEASE_SUFFIX"
                   echo "Release suffix: $RELEASE_SUFFIX"
             -   name: Create GitHub release
-                if: env.HEADTAG != '' and matrix.os == 'windows-latest'
+                if: env.HEADTAG != '' && matrix.os == 'windows-latest'
                 # Creates a Github release
                 id: create-new-release
                 uses: actions/create-release@v1
