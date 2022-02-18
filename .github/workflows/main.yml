@@ -171,9 +171,9 @@ jobs:
         steps:
             -   uses: actions/checkout@v1
             -   name: Matrix dump
+                shell: bash
                 run: |
-                    echo ${{matrix.os}}
-                    echo ${{matrix.shell}}
+                    echo "OSNAME=$(echo ${{matrix.os}} | sed 's/-latest//')" >> $GITHUB_ENV
             -   name: Download bdist and sdist artifacts
                 uses: actions/download-artifact@v2
                 with:
@@ -191,6 +191,7 @@ jobs:
                     python -m pip install --upgrade pip
                     pip install setuptools wheel
                     pip install twine pyinstaller ntc-templates
+                    echo ${{env.OSNAME}}
             -   name: PyInstaller - Build EXE - Windows
                 if: matrix.os == 'windows-latest'
                 run: |
@@ -206,7 +207,7 @@ jobs:
             -   name: Upload PyInstaller bundle
                 uses: actions/upload-artifact@v2
                 with:
-                    name: show_version_${{matrix.os}}_${{matrix.exe_name}}
+                    name: ${{matrix.exe_name}}_${{matrix.os}}
                     path: '${{ runner.temp }}${{ matrix.pathsep }}dist${{ matrix.pathsep }}bundles${{ matrix.pathsep }}${{matrix.exe_name}}_${{matrix.os}}.zip'
             -   name: Release Check
                 shell: bash
